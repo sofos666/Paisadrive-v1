@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { Phone, Mail, MessageSquare, User, DollarSign, Calendar, Zap } from "lucide-react";
 
@@ -51,8 +51,7 @@ export function ContactForm({ carId, carTitle }: ContactFormProps) {
   });
   
   const [currentStep, setCurrentStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false); // Mantenemos para deshabilitar el botón
 
   const handleInputChange = (field: keyof EnhancedContactData, value: string | number | boolean | string[]) => {
     setFormData(prev => ({
@@ -82,18 +81,15 @@ export function ContactForm({ carId, carTitle }: ContactFormProps) {
     e.preventDefault();
     
     if (!validateStep1() || !validateStep2()) {
-      toast({
-        title: "Información incompleta",
+      toast.error("Información incompleta", {
         description: "Por favor completa todos los campos requeridos.",
-        variant: "destructive",
       });
       return;
     }
 
     setIsSubmitting(true);
 
-    try {
-      // Save the enhanced contact request to Supabase
+    const promise = () => new Promise(async (resolve, reject) => {
       const { error } = await supabase
         .from('contact_requests')
         .insert({
@@ -113,40 +109,37 @@ export function ContactForm({ carId, carTitle }: ContactFormProps) {
           created_at: new Date().toISOString()
         });
 
-      if (error) throw error;
+      if (error) {
+        reject(error);
+      } else {
+        resolve(true);
+      }
+    });
 
-      toast({
-        title: "¡Consulta enviada con éxito!",
-        description: "Hemos recibido tu información detallada. Te contactaremos muy pronto para coordinar una cita personalizada.",
-      });
-
-      // Reset form
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        message: `Hola, estoy interesado en el ${carTitle}. Me gustaría obtener más información y agendar una cita para verlo.`,
-        budget_min: 0,
-        budget_max: 0,
-        financing_needed: false,
-        urgency_level: 'medium',
-        preferred_contact: 'phone',
-        available_times: [],
-        current_car_trade: false,
-        cash_available: false
-      });
-      setCurrentStep(1);
-
-    } catch (error) {
-      console.error('Error sending contact request:', error);
-      toast({
-        title: "Error",
-        description: "Hubo un problema al enviar tu consulta. Por favor intenta de nuevo.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    toast.promise(promise, {
+      loading: 'Enviando tu consulta...',
+      success: () => {
+        // Reset form state on success
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: `Hola, estoy interesado en el ${carTitle}. Me gustaría obtener más información y agendar una cita para verlo.`,
+          budget_min: 0,
+          budget_max: 0,
+          financing_needed: false,
+          urgency_level: 'medium',
+          preferred_contact: 'phone',
+          available_times: [],
+          current_car_trade: false,
+          cash_available: false
+        });
+        setCurrentStep(1);
+        return "¡Consulta enviada con éxito! Te contactaremos pronto.";
+      },
+      error: (error) => `Error: ${error.message || "Hubo un problema al enviar."}`,
+      finally: () => setIsSubmitting(false)
+    });
   };
 
   const formatCurrency = (value: number) => {

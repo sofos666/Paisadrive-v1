@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lightbulb, Wrench, ShieldQuestion, Car } from "lucide-react";
+import { motion } from "framer-motion";
 
 const resources = [
   {
@@ -35,21 +36,32 @@ export function HelpfulResources() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold">Recursos Útiles</h2>
-          <p className="text-gray-600 mt-2">Información valiosa para compradores y vendedores.</p>
+          <p className="text-muted-foreground mt-2">Información valiosa para compradores y vendedores.</p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {resources.map((resource) => (
-            <a href={resource.href} key={resource.title} className="block hover:-translate-y-2 transition-transform duration-300">
+            <motion.a 
+              href={resource.href} 
+              key={resource.title} 
+              className="block"
+              whileHover={{
+                scale: 1.03,
+                y: -5,
+                boxShadow: "0 10px 20px rgba(0,0,0,0.15)",
+                backgroundColor: "rgba(255, 255, 255, 0.3)",
+                backdropFilter: "blur(8px)"
+              }}
+            >
               <Card className="h-full">
                 <CardHeader className="items-center">
-                  <resource.icon className="w-10 h-10 text-blue-600 mb-2" />
+                  <resource.icon className="w-10 h-10 text-primary mb-2" />
                   <CardTitle>{resource.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-gray-700">{resource.description}</p>
+                  <p className="text-muted-foreground">{resource.description}</p>
                 </CardContent>
               </Card>
-            </a>
+            </motion.a>
           ))}
         </div>
       </div>

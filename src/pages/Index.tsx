@@ -11,7 +11,8 @@ import { Helmet } from "react-helmet-async";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Camera, Info, Phone } from "lucide-react";
+import { Camera, Info, Phone, MessageCircle } from "lucide-react";
+import { motion } from 'framer-motion';
 
 interface CarFilters {
   query: string;
@@ -86,77 +87,167 @@ export default function HomePage() {
       </Helmet>
       <Navbar />
       <main className="flex-grow container mx-auto px-4 md:px-6 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold">Encuentra tu Próximo Carro</h1>
-          <p className="text-lg text-gray-600">Explora cientos de vehículos usados en toda Colombia</p>
+        <motion.div 
+          className="text-center mb-8"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.15,
+                delayChildren: 0.2,
+              }
+            }
+          }}
+        >
+          <motion.h1 
+            className="text-4xl font-bold"
+            variants={{
+              hidden: { y: 20, opacity: 0 },
+              visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: "easeOut" } }
+            }}
+          >
+            Encuentra tu Próximo Carro
+          </motion.h1>
+          <motion.p 
+            className="text-lg text-gray-600 mt-2"
+            variants={{
+              hidden: { y: 20, opacity: 0 },
+              visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: "easeOut" } }
+            }}
+          >
+            Explora cientos de vehículos usados en toda Colombia
+          </motion.p>
           
-          {/* Photo Service Info Alert */}
-          <div className="max-w-md mx-auto mt-6">
-            <Alert className="border-blue-200 bg-blue-50">
-              <Info className="h-4 w-4" />
-              <AlertDescription className="flex items-center justify-between">
-                <span>¿Necesitas que te tomemos las fotos de tu vehículo?</span>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setShowPhotoService(!showPhotoService)}
-                >
-                  <Camera className="h-4 w-4 mr-2" />
-                  Más Info
-                </Button>
-              </AlertDescription>
-            </Alert>
-
-            {showPhotoService && (
-              <Alert className="border-green-200 bg-green-50 mt-4">
-                <Camera className="h-4 w-4" />
-                <AlertDescription>
-                  <strong>Servicio de Fotografía Profesional</strong><br />
-                  Nuestro equipo de fotógrafos profesionales puede visitar tu ubicación para tomar fotos de alta calidad que destaquen las mejores características de tu vehículo. Este servicio ayuda a aumentar las posibilidades de venta y atraer más compradores interesados.
-                  <div className="mt-3">
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                      <Phone className="h-4 w-4 mr-2" />
-                      Solicitar Servicio
-                    </Button>
-                  </div>
-                </AlertDescription>
-              </Alert>
-            )}
-          </div>
-        </div>
+          
+        </motion.div>
         <SearchFilter onSearch={handleSearch} />
         
         {isLoading && <div className="text-center">Cargando vehículos...</div>}
         {error && <div className="text-center text-red-500">Error al cargar los vehículos: {error.message}</div>}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.1
+              }
+            },
+            hidden: { opacity: 0 }
+          }}
+        >
           {cars?.map((car) => (
             <CarCard key={car.id} car={car} />
           ))}
-        </div>
+        </motion.div>
 
-        <div className="mt-16">
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white p-8 rounded-lg shadow-sm text-center">
+        <motion.div 
+          className="mt-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={{
+            hidden: { opacity: 0, y: 50 },
+            visible: { 
+              opacity: 1, 
+              y: 0, 
+              transition: { 
+                duration: 0.6, 
+                ease: "easeOut", 
+                staggerChildren: 0.15 
+              } 
+            }
+          }}
+        >
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <motion.div 
+              variants={{
+                hidden: { opacity: 0, y: 50 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
+              }}
+              whileHover={{
+                scale: 1.03,
+                boxShadow: "0 15px 30px rgba(0,0,0,0.25)"
+              }}
+              className="bg-white p-8 rounded-lg shadow-sm text-center flex flex-col glass-wave-effect"
+            >
               <h2 className="text-2xl font-bold mb-2">¿Necesitas Financiación?</h2>
-              <p className="text-gray-600 mb-4">Calcula tu crédito vehicular y encuentra el plan perfecto para ti.</p>
+              <p className="text-gray-600 mb-4 flex-grow">Calcula tu crédito vehicular y encuentra el plan perfecto para ti.</p>
               <Button asChild>
                 <a href="/creditos">Ir a la Calculadora</a>
               </Button>
-            </div>
-            <div className="bg-white p-8 rounded-lg shadow-sm text-center">
+            </motion.div>
+
+            <motion.div 
+              variants={{
+                hidden: { opacity: 0, y: 50 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
+              }}
+              whileHover={{
+                scale: 1.03,
+                boxShadow: "0 15px 30px rgba(0,0,0,0.25)"
+              }}
+              className="bg-white p-8 rounded-lg shadow-sm text-center flex flex-col glass-wave-effect"
+            >
               <h2 className="text-2xl font-bold mb-2">Asegura tu Inversión</h2>
-              <p className="text-gray-600 mb-4">Conduce con tranquilidad. Cotiza tu SOAT y seguro todo riesgo.</p>
+              <p className="text-gray-600 mb-4 flex-grow">Conduce con tranquilidad. Cotiza tu SOAT y seguro todo riesgo.</p>
               <Button asChild>
                 <a href="/seguros">Cotizar Seguros</a>
               </Button>
-            </div>
+            </motion.div>
+
+            <motion.div 
+              variants={{
+                hidden: { opacity: 0, y: 50 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
+              }}
+              whileHover={{
+                scale: 1.03,
+                boxShadow: "0 15px 30px rgba(0,0,0,0.25)"
+              }}
+              className="bg-white p-8 rounded-lg shadow-sm text-center flex flex-col glass-wave-effect"
+            >
+              <h2 className="text-2xl font-bold mb-2">¿Fotos Profesionales?</h2>
+              <p className="text-gray-600 mb-4 flex-grow">Nuestro equipo toma fotos de alta calidad para que tu vehículo destaque y se venda más rápido.</p>
+              <Button asChild className="bg-whatsapp text-white hover:bg-whatsapp/90">
+                <a href="https://wa.me/TUNUMERODEWHATSAPP" target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Contactar por WhatsApp
+                </a>
+              </Button>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
 
       </main>
-      <HelpfulResources />
-      <Footer />
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={{
+          hidden: { opacity: 0, y: 50 },
+          visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: "easeOut", delay: 0.2 } }
+        }}
+      >
+        <HelpfulResources />
+      </motion.div>
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={{
+          hidden: { opacity: 0, y: 50 },
+          visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: "easeOut", delay: 0.2 } }
+        }}
+      >
+        <Footer />
+      </motion.div>
     </div>
   );
 }

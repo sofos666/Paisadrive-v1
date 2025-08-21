@@ -93,14 +93,20 @@ export default function CarDetailsPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Helmet>
+        {/* -- SEO Meta Tags -- */}
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
+        <link rel="canonical" href={`https://www.paisadrive.com/car/${car.id}`} />
+
+        {/* -- Open Graph Tags (para redes sociales) -- */}
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
-        <meta property="og:image" content={car.images && car.images.length > 0 ? car.images[0] : '/og-image.png'} />
+        <meta property="og:image" content={car.image_urls && car.image_urls.length > 0 ? car.image_urls[0] : '/og-image.png'} />
         <meta property="og:type" content="product" />
         <meta property="product:price:amount" content={car.price.toString()} />
         <meta property="product:price:currency" content="COP" />
+        
+        {/* -- Structured Data (Schema.org) -- */}
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
